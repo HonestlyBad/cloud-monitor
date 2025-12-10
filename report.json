@@ -2,7 +2,7 @@
   {
     "name": "auth-api",
     "type": "http",
-    "status": "down",
+    "status": "healthy",
     "monthly_cost": 36.0
   },
   {
