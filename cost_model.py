@@ -1,4 +1,7 @@
+import logging
 from typing import Dict, Any
+
+logger = logging.getLogger(__name__)
 
 def estimate_monthly_cost(service: Dict[str, Any], hours_per_month: int = 24 * 30) -> float:
     """
@@ -30,5 +33,25 @@ def estimate_monthly_cost(service: Dict[str, Any], hours_per_month: int = 24 * 3
         # Simple cloud-like pricing model ($ per hour)
         rate = cpu * 0.02 + ram * 0.005
 
+        logger.debug(
+            "Derived hourly rate for service '%s' from cpu=%s, ram=%s -> rate=%.4f",
+            service.get("name", "unkown"),
+            cpu,
+            ram,
+            rate,
+        )
+    else:
+        logger.debug(
+            "Using explicit hourly_rate=%.4f for service '%s'",
+            rate,
+            service.get("name","unkown")
+        )
+
+    monthly_cost = round(rate * hours_per_month, 2)
+    logger.info(
+        "Estimated monthly cost for service '%s' is %.2f",
+        service.get("name", "unkown"),
+        monthly_cost,
+    )
     # Multiply by hours per month to get estimated monthly price
-    return round(rate * hours_per_month, 2)
+    return monthly_cost

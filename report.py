@@ -1,7 +1,10 @@
 import json
+import logging
 from typing import List, Dict, Any
 
 from colorama import init, Fore, Style
+
+logger = logging.getLogger(__name__)
 
 # Initialize colorama (needed especially on Windows to enable ANSI colors)
 init(autoreset=True)
@@ -49,6 +52,8 @@ def print_summary(env_name: str, results: List[Dict[str, Any]]) -> None:
         results (list): List of service health + cost dictionaries.
     """
 
+    logger.info("Printing summary for environment '%s' with %d services", env_name, len(results))
+
     print(f"\n=== Cloud Environment Health Report: {env_name} ===\n")
 
     # Legend for quick reference
@@ -66,6 +71,7 @@ def print_summary(env_name: str, results: List[Dict[str, Any]]) -> None:
 
     # Total monthly cost of all services
     total = sum(r["monthly_cost"] for r in results)
+    logger.info("Total estimated monthly cost for '%s' is %.2f", env_name, total)
     print(f"Total estimated monthly cost: ${total:,.2f}\n")
 
 

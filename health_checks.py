@@ -1,6 +1,9 @@
+import logging
 import subprocess
 import requests
 from typing import Literal, Dict, Any
+
+logger = logging.getLogger(__name__)
 
 # Allowed health statuses for clarity
 HealthStatus = Literal["healthy", "degraded", "down", "unknown"]
@@ -22,8 +25,11 @@ def http_health_check(url: str, timeout: float = 3.0) -> HealthStatus:
     Returns:
         HealthStatus: healthy / degraded / down
     """
+    logger.debug("Starting HTTP health check for %s", url)
     try:
         res = requests.get(url, timeout=timeout)
+        status_code = res.status_code
+        logger.debug("HTTP %s responded with status %d", url, status_code)
 
         # 2xx = healthy
         if 200 <= res.status_code < 300:
@@ -37,8 +43,9 @@ def http_health_check(url: str, timeout: float = 3.0) -> HealthStatus:
         else:
             return "down"
 
-    except requests.RequestException:
+    except requests.RequestException as e:
         # Network issue / timeout / DNS failure
+        logger.warning("HTTP health check failed for %s: %s", url, e)
         return "down"
 
 
@@ -58,6 +65,8 @@ def ping_health_check(host: str, timeout: int = 2000) -> HealthStatus:
         HealthStatus: healthy / down
     """
 
+    logger.debug("Starting ping health check for %s", host)
+
     # Windows uses "ping -n 1", Linux/Mac would use "-c 1"
     cmd = ["ping", "-n", "1", host]
 
@@ -65,7 +74,12 @@ def ping_health_check(host: str, timeout: int = 2000) -> HealthStatus:
     result = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     # 0 = success
-    return "healthy" if result.returncode == 0 else "down"
+    if result.returncode == 0:
+        logger.debug("Ping to %s succeeded", host)
+        return "healthy"
+    
+    logger.warning("Ping to %s failed with return code %d", host, result.returncode)
+    return "down"
 
 
 def evaluate_service(service: Dict[str, Any]) -> Dict[str, Any]:
@@ -81,6 +95,9 @@ def evaluate_service(service: Dict[str, Any]) -> Dict[str, Any]:
     """
 
     stype = service.get("type")
+    name = service.get("name", "unkown")
+    logger.debug("Evaluating service '%s' of type '%s'", name, stype)
+
     status: HealthStatus = "unknown"
 
     # Call the right health check based on type
@@ -91,7 +108,10 @@ def evaluate_service(service: Dict[str, Any]) -> Dict[str, Any]:
         status = ping_health_check(service["host"])
 
     else:
+        logger.warning("Unkown service type '%s' for service '%s'", stype, name)
         status = "unknown"
+
+    logger.info("Service '%s' evaluated with status '%s'", name, status)
 
     # Return standardized health response
     return {
