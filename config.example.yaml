@@ -1,0 +1,25 @@
+environment: "staging"
+owner: "Albert"
+currency: "USD"
+
+services:
+  - name: "auth-api"
+    type: "http"
+    url: "https://httpbin.org/status/200"
+    cpu_cores: 2
+    ram_gb: 4
+    hourly_rate: 0.05
+
+  - name: "user-service"
+    type: "http"
+    url: "https://httpbin.org/status/503"
+    cpu_cores: 1
+    ram_gb: 2
+    hourly_rate: 0.03
+
+  - name: "internal-worker"
+    type: "ping"
+    host: "8.8.8.8"
+    cpu_cores: 1
+    ram_gb: 1
+    hourly_rate: 0.02
