@@ -256,7 +256,7 @@ Run this tool inside CI/CD jobs or as a cron-based monitoring container.
 
 ## 📄 License
 
-MIT License (or your preferred license)
+MIT License 
 
 ---
 
