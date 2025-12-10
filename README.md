@@ -51,7 +51,7 @@ cloud-monitor/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourname/cloud-monitor.git
+git clone https://github.com/HonestlyBad/cloud-monitor.git
 cd cloud-monitor
 ```
 
