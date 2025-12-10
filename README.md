@@ -263,5 +263,5 @@ MIT License (or your preferred license)
 ## 👤 Author
 
 **Albert Tulo IV**  
-Cloud Engineer / Developer  
+Software Developer / Cloud Engineer 
 GitHub: (https://github.com/HonestlyBad)
